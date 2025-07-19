@@ -6,7 +6,7 @@ import { hasAnyRole, ROLES } from "@/lib/roles"
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -28,6 +28,7 @@ export async function PATCH(
     }
 
     const { role } = await request.json()
+    const { id } = await params
 
     // Validate role
     const validRoles = ["ADMIN", "MANAGER", "CUSTOMER", "CHEF"]
@@ -39,7 +40,7 @@ export async function PATCH(
     }
 
     // Prevent users from changing their own role
-    if (params.id === session.user.id) {
+    if (id === session.user.id) {
       return NextResponse.json(
         { error: "Cannot change your own role" },
         { status: 400 }
@@ -48,7 +49,7 @@ export async function PATCH(
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingUser) {
@@ -60,7 +61,7 @@ export async function PATCH(
 
     // Update user role
     const updatedUser = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: { role },
       select: {
         id: true,
