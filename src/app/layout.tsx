@@ -5,7 +5,7 @@ import Navigation from "@/components/navigation"
 
 export const metadata: Metadata = {
   title: "Shanis Kitchen Stock Management",
-  description: "Manage your kitchen inventory and production",
+  description: "Manage your kitchen inventory and Snackes production",
 }
 
 export default function RootLayout({

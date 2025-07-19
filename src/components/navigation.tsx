@@ -52,7 +52,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <h1 className="text-lg font-bold text-primary-800">
-              Kitchen Stock
+            Shani&#39;s Kitchen
             </h1>
           </div>
           

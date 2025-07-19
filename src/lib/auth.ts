@@ -32,11 +32,11 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        const users = await prisma.$queryRaw<Array<ExtendedUser>>`
-          SELECT * FROM User WHERE username = ${credentials.username} LIMIT 1
-        `
-
-        const user = users[0]
+        const user = await prisma.user.findUnique({
+          where: {
+            username: credentials.username
+          }
+        })
         
         if (!user || !user.password) {
           return null

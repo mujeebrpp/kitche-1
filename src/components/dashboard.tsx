@@ -41,7 +41,7 @@ export default function Dashboard() {
         {/* Welcome section */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-primary-900 mb-2">Dashboard</h2>
-          <p className="text-primary-700">Manage your kitchen operations 123</p>
+          <p className="text-primary-700">Manage your kitchen operations</p>
         </div>
 
         {/* Mobile-first grid - single column on mobile, 2 columns on larger screens */}

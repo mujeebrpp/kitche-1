@@ -12,7 +12,6 @@ export default function SignUpPage() {
     confirmPassword: "",
     name: "",
     email: "",
-    role: "CUSTOMER",
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -51,7 +50,7 @@ export default function SignUpPage() {
           password: formData.password,
           name: formData.name,
           email: formData.email,
-          role: formData.role,
+          role: "CUSTOMER",
         }),
       })
 
@@ -129,12 +128,13 @@ export default function SignUpPage() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-primary-700">
-                Email <span className="text-primary-500">(optional)</span>
+                Email
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
+                required
                 className="mt-1 appearance-none relative block w-full px-3 py-3 border border-primary-300 placeholder-primary-400 text-primary-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm min-h-[44px]"
                 placeholder="Enter email address"
                 value={formData.email}
@@ -142,24 +142,7 @@ export default function SignUpPage() {
               />
             </div>
 
-            <div>
-              <label htmlFor="role" className="block text-sm font-medium text-primary-700">
-                Role
-              </label>
-              <select
-                id="role"
-                name="role"
-                required
-                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-primary-300 text-primary-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm min-h-[44px] bg-white"
-                value={formData.role}
-                onChange={handleChange}
-              >
-                <option value="CUSTOMER">Customer</option>
-                <option value="CHEF">Chef</option>
-                <option value="MANAGER">Manager</option>
-                <option value="ADMIN">Admin</option>
-              </select>
-            </div>
+
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-primary-700">
