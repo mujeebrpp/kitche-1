@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import type { Stock, Ingredient } from "@prisma/client"
 
 export async function GET() {
   try {
@@ -67,7 +68,7 @@ export async function GET() {
 
     // Get low stock items
     const lowStockItems = stockReport.filter(
-      (item) => item.quantity < 10
+      (item: Stock & { ingredient: Ingredient }) => item.quantity < 10
     )
 
     const report = {

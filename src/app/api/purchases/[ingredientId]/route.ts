@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import type { Purchase } from "@prisma/client"
 
 export async function GET(
   request: Request,
@@ -50,8 +51,8 @@ export async function GET(
 
     // Calculate summary statistics
     const totalPurchases = purchases.length
-    const totalQuantity = purchases.reduce((sum, p) => sum + p.quantity, 0)
-    const totalCost = purchases.reduce((sum, p) => sum + p.totalCost, 0)
+    const totalQuantity = purchases.reduce((sum: number, p: Purchase) => sum + p.quantity, 0)
+    const totalCost = purchases.reduce((sum: number, p: Purchase) => sum + p.totalCost, 0)
     const averageUnitPrice = totalQuantity > 0 ? totalCost / totalQuantity : 0
 
     return NextResponse.json({

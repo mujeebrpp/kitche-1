@@ -353,7 +353,7 @@ async function main() {
   console.log('✅ Sample orders seeded')
 
   // Create Admin user
-  const hashedPassword = await bcrypt.hash('One@kofi#2025', 12)
+  const hashedPassword = await bcrypt.hash('admin123', 12)
   
   const adminUser = await prisma.user.upsert({
     where: { username: 'admin' },
@@ -370,12 +370,12 @@ async function main() {
   console.log('✅ Admin user created')
   console.log('📧 Admin credentials:')
   console.log('   Username: admin')
-  console.log('   Password: xxxxxx025')
+  console.log('   Password: admin123')
   console.log('   Email: admin@kimikitchen.com')
   console.log('   Role: ADMIN')
 
   // Create Manager user
-  const managerPassword = await bcrypt.hash('One@kofi#2025', 12)
+  const managerPassword = await bcrypt.hash('manager123', 12)
   
   const managerUser = await prisma.user.upsert({
     where: { username: 'manager' },
@@ -392,12 +392,12 @@ async function main() {
   console.log('✅ Manager user created')
   console.log('📧 Manager credentials:')
   console.log('   Username: manager')
-  console.log('   Password: xxxxxx5')
+  console.log('   Password: manager123')
   console.log('   Email: manager@kimikitchen.com')
   console.log('   Role: MANAGER')
 
   // Create Chef user
-  const chefPassword = await bcrypt.hash('One@kofi#2025', 12)
+  const chefPassword = await bcrypt.hash('chef123', 12)
   
   const chefUser = await prisma.user.upsert({
     where: { username: 'chef' },
@@ -414,12 +414,12 @@ async function main() {
   console.log('✅ Chef user created')
   console.log('📧 Chef credentials:')
   console.log('   Username: chef')
-  console.log('   Password: One@xxxxx#2025')
+  console.log('   Password: chef123')
   console.log('   Email: chef@kimikitchen.com')
   console.log('   Role: CHEF')
 
   // Create Customer user
-  const customerPassword = await bcrypt.hash('One@kofi#2025', 12)
+  const customerPassword = await bcrypt.hash('customer123', 12)
   
   const customerUser = await prisma.user.upsert({
     where: { username: 'customer' },
@@ -436,7 +436,7 @@ async function main() {
   console.log('✅ Customer user created')
   console.log('📧 Customer credentials:')
   console.log('   Username: customer')
-  console.log('   Password: xxxxxxx')
+  console.log('   Password: customer123')
   console.log('   Email: customer@kimikitchen.com')
   console.log('   Role: CUSTOMER')
 
