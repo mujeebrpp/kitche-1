@@ -4,7 +4,7 @@ import AuthSessionProvider from "@/components/providers/session-provider"
 import Navigation from "@/components/navigation"
 
 export const metadata: Metadata = {
-  title: "Kitchen Stock Management",
+  title: "Shanis Kitchen Stock Management",
   description: "Manage your kitchen inventory and production",
 }
 
