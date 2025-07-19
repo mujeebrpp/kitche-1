@@ -1,0 +1,206 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+//// ========== NEXTAUTH V5 MODELS ==========
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  CUSTOMER
+  CHEF
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  username      String?         @unique
+  email         String?         @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  role          UserRole        @default(CUSTOMER)
+  active        Boolean         @default(true)
+  accounts      Account[]
+  sessions      Session[]
+  Authenticators Authenticator[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, credentialID])
+}
+
+//// ========== SNACKS MANUFACTURING MODELS ==========
+
+model Ingredient {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  unit        String   // e.g. kg, g, litre, piece
+  stock       Stock[]
+  purchases   Purchase[]
+  recipeItems RecipeItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Purchase {
+  id            String     @id @default(cuid())
+  ingredientId  String
+  ingredient    Ingredient @relation(fields: [ingredientId], references: [id])
+  quantity      Float
+  unitPrice     Float
+  totalCost     Float
+  purchasedAt   DateTime   @default(now())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Stock {
+  id            String     @id @default(cuid())
+  ingredientId  String
+  ingredient    Ingredient @relation(fields: [ingredientId], references: [id])
+  quantity      Float
+  updatedAt     DateTime   @updatedAt
+}
+
+model Recipe {
+  id           String         @id @default(cuid())
+  name         String         @unique
+  description  String?
+  recipeItems  RecipeItem[]
+  productions  Production[]
+  orderItems   OrderItem[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model RecipeItem {
+  id           String     @id @default(cuid())
+  recipeId     String
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  quantity     Float
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Production {
+  id            String     @id @default(cuid())
+  recipeId      String
+  recipe        Recipe     @relation(fields: [recipeId], references: [id])
+  quantity      Int
+  labourCost    Float      @default(0)
+  overheadCost  Float      @default(0)
+  packagingCost Float      @default(0)
+  productionCost ProductionCost?
+  producedAt    DateTime   @default(now())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model ProductionCost {
+  id                  String       @id @default(cuid())
+  productionId        String       @unique
+  production          Production   @relation(fields: [productionId], references: [id])
+  ingredientCost      Float
+  labourCost          Float
+  overheadCost        Float
+  packagingCost       Float
+  totalProductionCost Float
+  calculatedAt        DateTime @default(now())
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  customerName  String
+  orderDate     DateTime      @default(now())
+  status        String
+  orderItems    OrderItem[]
+  distributions Distribution[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id])
+  recipeId    String
+  recipe      Recipe   @relation(fields: [recipeId], references: [id])
+  quantity    Int
+  unitPrice   Float
+  totalPrice  Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Distribution {
+  id            String   @id @default(cuid())
+  orderId       String
+  order         Order    @relation(fields: [orderId], references: [id])
+  distributedAt DateTime @default(now())
+  deliveredTo   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  type        String
+  data        Json
+  generatedAt DateTime @default(now())
+}
