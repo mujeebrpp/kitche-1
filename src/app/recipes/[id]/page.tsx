@@ -36,7 +36,7 @@ export default function RecipeDetailPage() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
-  
+
   // Ingredient management states
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingItem, setEditingItem] = useState<string | null>(null)
@@ -136,7 +136,7 @@ export default function RecipeDetailPage() {
         const updatedItem = await response.json()
         setRecipe(prev => prev ? {
           ...prev,
-          recipeItems: prev.recipeItems.map(item => 
+          recipeItems: prev.recipeItems.map(item =>
             item.id === itemId ? updatedItem : item
           )
         } : null)

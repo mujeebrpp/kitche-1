@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ingredientSchema } from "@/lib/validations"
 import { z } from "zod"
+import { hasRole, ROLES } from "@/lib/roles"
 
 // Type definitions
 type Ingredient = z.infer<typeof ingredientSchema> & {
@@ -57,6 +58,13 @@ export default function UnifiedStockPage() {
   // Form states
   const [showIngredientForm, setShowIngredientForm] = useState(false)
   const [ingredientFormData, setIngredientFormData] = useState({
+    name: "",
+    unit: "",
+  })
+  
+  // Edit ingredient states
+  const [editingIngredient, setEditingIngredient] = useState<string | null>(null)
+  const [editIngredientData, setEditIngredientData] = useState({
     name: "",
     unit: "",
   })
@@ -133,6 +141,69 @@ export default function UnifiedStockPage() {
       }
     } catch (error) {
       console.error("Error creating ingredient:", error)
+    }
+  }
+
+  // Edit ingredient handlers
+  const startEditIngredient = (ingredient: Ingredient) => {
+    setEditingIngredient(ingredient.id)
+    setEditIngredientData({
+      name: ingredient.name,
+      unit: ingredient.unit,
+    })
+  }
+
+  const cancelEditIngredient = () => {
+    setEditingIngredient(null)
+    setEditIngredientData({ name: "", unit: "" })
+  }
+
+  const handleUpdateIngredient = async (ingredientId: string) => {
+    try {
+      const response = await fetch(`/api/ingredients/${ingredientId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editIngredientData),
+      })
+
+      if (response.ok) {
+        setEditingIngredient(null)
+        setEditIngredientData({ name: "", unit: "" })
+        fetchIngredients()
+        fetchStock() // Refresh stock to show updated units
+      } else {
+        const error = await response.json()
+        alert(error.error || "Failed to update ingredient")
+      }
+    } catch (error) {
+      console.error("Error updating ingredient:", error)
+      alert("Failed to update ingredient")
+    }
+  }
+
+  const handleDeleteIngredient = async (ingredientId: string, ingredientName: string) => {
+    if (!confirm(`Are you sure you want to delete "${ingredientName}"? This will also delete all associated stock and purchase records.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/ingredients/${ingredientId}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        fetchIngredients()
+        fetchStock()
+        fetchPurchases()
+      } else {
+        const error = await response.json()
+        alert(error.error || "Failed to delete ingredient")
+      }
+    } catch (error) {
+      console.error("Error deleting ingredient:", error)
+      alert("Failed to delete ingredient")
     }
   }
 
@@ -388,35 +459,106 @@ export default function UnifiedStockPage() {
                     {ingredients.map((ingredient) => (
                       <li key={ingredient.id}>
                         <div className="px-4 py-3">
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center space-x-3">
-                                <span className="text-2xl">🥬</span>
+                          {editingIngredient === ingredient.id ? (
+                            // Edit mode
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                  <h3 className="text-lg font-medium text-primary-900 truncate">
-                                    {ingredient.name}
-                                  </h3>
-                                  <p className="text-sm text-primary-600">
-                                    Unit: {ingredient.unit}
+                                  <label className="block text-sm font-medium text-primary-700">
+                                    Name
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={editIngredientData.name}
+                                    onChange={(e) =>
+                                      setEditIngredientData({ ...editIngredientData, name: e.target.value })
+                                    }
+                                    className="mt-1 block w-full rounded-md border-primary-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 min-h-[44px]"
+                                    autoFocus
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-primary-700">
+                                    Unit
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={editIngredientData.unit}
+                                    onChange={(e) =>
+                                      setEditIngredientData({ ...editIngredientData, unit: e.target.value })
+                                    }
+                                    className="mt-1 block w-full rounded-md border-primary-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 min-h-[44px]"
+                                    placeholder="e.g., kg, g, litre, piece"
+                                  />
+                                </div>
+                              </div>
+                              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                                <button
+                                  onClick={() => handleUpdateIngredient(ingredient.id)}
+                                  disabled={!editIngredientData.name.trim() || !editIngredientData.unit.trim()}
+                                  className="group relative flex justify-center py-2 px-3 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 min-h-[36px] shadow-sm disabled:opacity-50"
+                                  style={{ backgroundColor: '#16a34a', color: '#ffffff' }}
+                                >
+                                  Save Changes
+                                </button>
+                                <button
+                                  onClick={cancelEditIngredient}
+                                  className="bg-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-400 min-h-[36px] font-medium text-sm"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            // View mode
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center space-x-3">
+                                  <span className="text-2xl">🥬</span>
+                                  <div>
+                                    <h3 className="text-lg font-medium text-primary-900 truncate">
+                                      {ingredient.name}
+                                    </h3>
+                                    <p className="text-sm text-primary-600">
+                                      Unit: {ingredient.unit}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col sm:items-end space-y-2">
+                                <div className="flex flex-col sm:text-right space-y-1">
+                                  <p className="text-sm font-medium text-primary-900">
+                                    Stock: {ingredient.stock[0]?.quantity || 0} {ingredient.unit}
                                   </p>
+                                  <p className="text-sm text-primary-600">
+                                    Last price: ₹{ingredient.purchases[0]?.unitPrice || "N/A"}
+                                  </p>
+                                </div>
+                                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                                  <Link
+                                    href={`/stock/${ingredient.id}/purchase-history`}
+                                    className="inline-flex items-center justify-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 min-h-[32px]"
+                                  >
+                                    Purchase History
+                                  </Link>
+                                  <button
+                                    onClick={() => startEditIngredient(ingredient)}
+                                    className="inline-flex items-center justify-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 min-h-[32px]"
+                                  >
+                                    Edit
+                                  </button>
+                                  {hasRole(session?.user?.role, ROLES.ADMIN) && (
+                                    <button
+                                      onClick={() => handleDeleteIngredient(ingredient.id, ingredient.name)}
+                                      className="inline-flex items-center justify-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 min-h-[32px]"
+                                    >
+                                      Delete
+                                    </button>
+                                  )}
                                 </div>
                               </div>
                             </div>
-                            <div className="flex flex-col sm:text-right space-y-1">
-                              <p className="text-sm font-medium text-primary-900">
-                                Stock: {ingredient.stock[0]?.quantity || 0} {ingredient.unit}
-                              </p>
-                              <p className="text-sm text-primary-600">
-                                Last price: ₹{ingredient.purchases[0]?.unitPrice || "N/A"}
-                              </p>
-                              <Link
-                                href={`/stock/${ingredient.id}/purchase-history`}
-                                className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 min-h-[32px]"
-                              >
-                                View Purchase History
-                              </Link>
-                            </div>
-                          </div>
+                          )}
                         </div>
                       </li>
                     ))}
@@ -522,7 +664,8 @@ export default function UnifiedStockPage() {
 
                     <button
                       type="submit"
-                      className="w-full bg-primary-600 text-white py-3 px-4 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 min-h-[44px] font-medium"
+                      className="w-full group relative flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 min-h-[44px] shadow-sm"
+                      style={{ backgroundColor: '#16a34a', color: '#ffffff' }}
                     >
                       Add Purchase & Update Stock
                     </button>
