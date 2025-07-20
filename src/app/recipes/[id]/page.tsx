@@ -399,7 +399,7 @@ export default function RecipeDetailPage() {
                 <div className="text-center py-8 text-primary-600">
                   <div className="text-6xl mb-4">🥬</div>
                   <p className="text-lg font-medium text-primary-800">No ingredients added yet</p>
-                  <p className="text-sm mt-2">Click "Add Ingredient" to get started</p>
+                  <p className="text-sm mt-2">Click &quot;Add Ingredient&quot; to get started</p>
                 </div>
               )}
             </div>

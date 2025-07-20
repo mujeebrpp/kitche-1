@@ -184,7 +184,7 @@ export default function UnifiedStockPage() {
   }
 
   const handleDeleteIngredient = async (ingredientId: string, ingredientName: string) => {
-    if (!confirm(`Are you sure you want to delete "${ingredientName}"? This will also delete all associated stock and purchase records.`)) {
+    if (!confirm(`Are you sure you want to delete &quot;${ingredientName}&quot;? This will also delete all associated stock and purchase records.`)) {
       return
     }
 
