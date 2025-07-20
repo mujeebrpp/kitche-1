@@ -125,6 +125,44 @@ This project is a comprehensive kitchen stock management system built with Next.
 - `GET /api/purchases` - List all purchases
 - `POST /api/purchases` - Record new purchase
 
+## 📋 **ROLE PERMISSION MATRIX**
+
+### **ADMIN (Full Access)**
+- ✅ **User Management**: Create, edit, delete, activate/deactivate users
+- ✅ **Stock**: Full CRUD including delete ingredients
+- ✅ **Recipes**: Full CRUD operations
+- ✅ **Production**: Full management and oversight
+- ✅ **Orders**: Full management and status changes
+- ✅ **Reports**: Full analytics access
+- ✅ **System**: All administrative functions
+
+### **MANAGER (Operations Management)**
+- ✅ **User Management**: View users, change roles (not status)
+- ❌ **Stock**: Cannot delete ingredients
+- ✅ **Recipes**: Full CRUD operations
+- ✅ **Production**: Full management
+- ✅ **Orders**: Full management and status changes
+- ✅ **Reports**: Full analytics access
+- ❌ **System**: No administrative functions
+
+### **CHEF (Kitchen Operations)**
+- ❌ **User Management**: No access
+- ❌ **Stock**: Cannot delete ingredients
+- ✅ **Recipes**: Full CRUD operations
+- ✅ **Production**: Full management
+- ❌ **Orders**: View only, cannot change status
+- ❌ **Reports**: No access
+- ❌ **System**: No administrative functions
+
+### **CUSTOMER (Limited Access)**
+- ❌ **User Management**: No access
+- ❌ **Stock**: No access
+- ❌ **Recipes**: No access
+- ❌ **Production**: No access
+- ✅ **Orders**: View own orders only
+- ❌ **Reports**: No access
+- ❌ **System**: No administrative functions
+
 ## Database Schema
 
 ### Core Models

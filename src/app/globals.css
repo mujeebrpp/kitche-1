@@ -24,7 +24,9 @@ body {
 
 /* Touch-friendly interactive elements */
 @media (max-width: 600px) {
-  button, a {
+
+  button,
+  a {
     min-height: 44px;
     min-width: 44px;
   }

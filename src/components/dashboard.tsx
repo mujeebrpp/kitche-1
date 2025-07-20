@@ -8,40 +8,80 @@ export default function Dashboard() {
   const { data: session } = useSession()
   const router = useRouter()
 
-  const menuItems = [
-    {
-      title: "Stock",
-      description: "View current stock levels & manage purchases",
-      href: "/stock",
-      icon: "📈",
-    },
-    {
-      title: "Recipes & Production",
-      description: "Manage recipes and track production batches",
-      href: "/recipes-production",
-      icon: "🍳",
-    },
-    {
-      title: "Orders",
-      description: "Manage customer orders",
-      href: "/orders",
-      icon: "📦",
-    },
-    {
-      title: "Reports",
-      description: "View analytics and reports",
-      href: "/reports",
-      icon: "📊",
-    },
-  ]
+  // Role-based menu items
+  const getAllMenuItems = () => {
+    const userRole = session?.user?.role as "ADMIN" | "MANAGER" | "CHEF" | "CUSTOMER" | undefined
+
+    const baseItems = [
+      {
+        title: "Orders",
+        description: userRole === "CUSTOMER" ? "View your orders" : "Manage customer orders",
+        href: "/orders",
+        icon: "📦",
+        roles: ["ADMIN", "MANAGER", "CHEF", "CUSTOMER"],
+      },
+    ]
+
+    const operationalItems = [
+      {
+        title: "Stock Management",
+        description: "View current stock levels & manage purchases",
+        href: "/stock",
+        icon: "📈",
+        roles: ["ADMIN", "MANAGER", "CHEF"],
+      },
+      {
+        title: "Recipes & Production",
+        description: "Manage recipes and track production batches",
+        href: "/recipes-production",
+        icon: "🍳",
+        roles: ["ADMIN", "MANAGER", "CHEF"],
+      },
+      {
+        title: "Reports & Analytics",
+        description: "View business analytics and reports",
+        href: "/reports",
+        icon: "📊",
+        roles: ["ADMIN", "MANAGER"],
+      },
+    ]
+
+    const adminItems = [
+      {
+        title: "User Management",
+        description: "Manage system users and permissions",
+        href: "/users",
+        icon: "👥",
+        roles: ["ADMIN"],
+      },
+    ]
+
+    const allItems = [...baseItems, ...operationalItems, ...adminItems]
+    
+    return allItems.filter(item => 
+      userRole && item.roles.includes(userRole)
+    )
+  }
+
+  const menuItems = getAllMenuItems()
 
   return (
     <div className="min-h-screen bg-primary-50">
       <main className="max-w-[600px] mx-auto px-4 py-6">
         {/* Welcome section */}
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-primary-900 mb-2">Dashboard</h2>
-          <p className="text-primary-700">Manage your kitchen operations</p>
+          <h2 className="text-2xl font-bold text-primary-900 mb-2">
+            Welcome, {session?.user?.name || session?.user?.username}!
+          </h2>
+          <p className="text-primary-700">
+            {session?.user?.role === "ADMIN" && "Full system administration and management"}
+            {session?.user?.role === "MANAGER" && "Kitchen operations and staff management"}
+            {session?.user?.role === "CHEF" && "Recipe creation and production management"}
+            {session?.user?.role === "CUSTOMER" && "View your orders and account information"}
+          </p>
+          <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+            {session?.user?.role} Access Level
+          </div>
         </div>
 
         {/* Mobile-first grid - single column on mobile, 2 columns on larger screens */}
