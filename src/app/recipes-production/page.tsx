@@ -388,7 +388,7 @@ export default function RecipesProductionPage() {
                                 onClick={() => router.push(`/recipes/${recipe.id}`)}
                                 className="bg-primary-100 text-primary-700 px-3 py-2 rounded-md hover:bg-primary-200 text-sm font-medium min-h-[44px]"
                               >
-                                View Details
+                                Update
                               </button>
                               <button
                                 onClick={() => router.push(`/recipes/${recipe.id}/edit`)}

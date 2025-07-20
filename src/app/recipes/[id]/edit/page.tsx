@@ -252,7 +252,7 @@ export default function EditRecipePage() {
                     <label className="block text-sm font-medium text-primary-700">Quantity</label>
                     <input
                       type="number"
-                      step="0.01"
+                      step="0.001"
                       value={newQuantity}
                       onChange={(e) => setNewQuantity(e.target.value)}
                       className="mt-1 block w-full rounded-md border-primary-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 min-h-[44px]"
