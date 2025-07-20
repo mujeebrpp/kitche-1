@@ -328,9 +328,10 @@ export default function RecipesProductionPage() {
                   <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                     <button
                       type="submit"
-                      className="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 min-h-[44px] font-medium"
+                      className="group relative flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 min-h-[44px] shadow-sm"
+                      style={{ backgroundColor: '#16a34a', color: '#ffffff' }}
                     >
-                      Save
+                      Save Recipe
                     </button>
                     <button
                       type="button"
